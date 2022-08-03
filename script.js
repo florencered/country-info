@@ -37,7 +37,12 @@ function initialise(countriesData){
 
 
 } 
-let fun=(randomw)=>console.log(randomw);
+let fun = (country) => {
+	console.log(country);
+	displayCountryInfo(country);
+	resultsWrapper.innerHTML = ``;
+	document.getElementById("search").value=country;
+}
 
 /************searchbar*********************/
 
@@ -54,15 +59,14 @@ searchInput.addEventListener('keyup', () => {
 });
 
 function renderResults(results) {
+	console.log("Resilts:",results);
   if (!results.length) {
     return searchWrapper.classList.remove('show');
   }
 
   const content = results
     .map((item) => { 
-    	console.log(typeof item) 
-
-      return `<li onclick=fun("${item}") class="countries">${item}</li>`;
+      return `<li onclick="fun('${item}')" class="countries">${item}</li>`;
     })
     .join(''); 
     
@@ -79,11 +83,11 @@ function renderResults(results) {
 }) */
 
 /********************display the content******************/
-function displayCountryInfo(countryCode){
-	const countryData=countryNames.find(cinfo=>cinfo.cca3===countryCode)
+function displayCountryInfo(countryName){
+	const countryData=countries.find(c=>c.name.official===countryName)
 //.find works similar .forEach  
 console.log(countryData); 
-document.getElementById('flagImg').src=countryNames.flags.png;
+document.getElementById('flagImg').src=countryData.flags.png;
 
 
 var language=Object.values(countryData.languages); 
