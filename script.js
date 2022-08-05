@@ -1,73 +1,147 @@
+console.log("working");  
+let countryNames=[]; //array
+const searchInput = document.getElementById('search');
+const searchWrapper = document.querySelector('.wrapper');
+const resultsWrapper = document.querySelector('.results');
+let countries; //will contain fetched data,simiar to let countries={}
+//event listener for change 
+/*document.getElementById("countries").addEventListener('change',(event)=>{ 
+
+	console.log(event.target.value);
+	displayCountryInfo(event.target.value);
+})*/ 
+
+/**************fetching data**************/
+fetch("https://restcountries.com/v3.1/all")
+.then(function (response){ 
+	return response.json()
+
+})
+
+.then(function (data){
+	console.log(data) 
+	initialise(data);
+}) 
+.catch(function(err){
+	console.log("Error:",err);
+});
+/***************pushing country names from array to api*******************/
+function initialise(countriesData){ 
+	countries=countriesData //variable for all the country names obtained through fetch api
+	console.log(countriesData);
+	let items="" //will add the country names as options in the inner html 
+	countries.forEach(country=>(countryNames.push(country.name.official)) )
+	//document.getElementById('countries').innerHTML=items; 
+	//to show the info of the selected country 
+	
 
 
-let weather={
-	apiKey:"f06efb9fc4cc400992a24f1a65a6aa02", //apikey 
-	        fetchWeather: function (city) {     fetch(       "https://api.openweathermap.org/data/2.5/weather?q=" + 
-                   city 
-                   +         
-                   "&units=metric&appid=" +      this.apiKey     )
-    //asking for data and response  
-   .then((response) => {  //3.once we 'fetched' the api,we can make it do specific tasks using .then
-        if (!response.ok) {  //response is the func parameter taken..if response is not ok then,//response recieved in boolean true or false format
-          alert("No weather found."); //alert by showing a pop up box saying "weather not found"
-          //throw new Error("No weather found."); //new error object created which would say no weather found when 
-          //the response recieved is not true
-        }
-        return response.json(); //response is a constructor,return the response or all the info in the fetch url and store it in the json format
-      })
+} 
+let fun = (country) => {
+	console.log(country);
+	displayCountryInfo(country); 
 
-	 
-	//
-	.then((data)=>this.displayWeather(data)); 
+	resultsWrapper.innerHTML = ``;
+	resultsWrapper.style.padding="0px 0px";
+	document.getElementById("search").value=country;
+}
 
-} ,
- /*********display the credentials on screen**********/
- displayWeather: function(data){ 
- 	//access diff elements 
-    const {name}=data; 
-    const { icon, description } = data.weather[0]; 
-  
-    const {temp,feels_like,temp_min,temp_max,humidity}=data.main; 
-    const {speed}=data.wind; 
-    //access and assign the inner texts accordingly 
-    document.querySelector(".city").innerText="Weather in "+ name;
-    document.querySelector(".description").innerText=description; 
-    document.querySelector(".humidity").innerText="Humidity: "+ humidity+"%"; 
-    document.querySelector(".wind").innerText="Windspeed: "+speed+" Km/hr"; 
-    document.querySelector(".minTemp").innerText="Min Temp: "+ temp_min+" %"; 
-    document.querySelector(".maxTemp").innerText="Max Temp: "+temp_max+" %"; 
-    document.querySelector(".feels").innerText="Feels: "+feels_like+ "°C";  
-    document.querySelector(".temp").innerText="Temperature: "+ temp+"°C";  
-    //remove the laoding part once all the info is obtained 
-    document.querySelector(".weather").classList.remove("loading"); 
-    document.body.style.backgroundImage =
-      "url('https://source.unsplash.com/1600x900/?" + name + "')"; 
-           /**********connecting the search bar text and fetchWeather function******/
+/************searchbar*********************/
 
- } ,
+searchInput.addEventListener('keyup', () => {
+  let results = [];
+  let input = searchInput.value;
+  if (input.length) {
+    results = countryNames.filter((item) => {
+      return item.toLowerCase().includes(input.toLowerCase()); 
 
-search: function () { //search function with no parameter
-    this.fetchWeather(document.querySelector(".search-bar").value); //the fetch weather object should take the value written in the search bar as the input parameter
-  
-  }, 
+    });
+  }
+  renderResults(results);
+});
 
-} ;  
+function renderResults(results){
+	console.log("Results:",results);
+  if (!results.length) {
+    return searchWrapper.classList.remove('show');
+  }
+
+  const content = results
+    .map((item) => { 
+      return `<li onclick="fun('${item}')" class="countries">${item}</li>`;
+    })
+    .join(''); 
+    
+
+  searchWrapper.classList.add('show');
+  resultsWrapper.innerHTML = `<ul >${content}</ul>`;
+} 
+/******************register input on searchbar************************/ 
+
+/*document.querySelector("countries").addEventListener('click',(event)=>{ 
+
+	console.log(event.target);
+	//displayCountryInfo(event.target.value);
+}) */
+
+/********************display the content******************/
+function displayCountryInfo(countryName){
+	const countryData=countries.find(c=>c.name.official===countryName)
+//.find works similar .forEach  
+console.log(countryData); 
+document.getElementById('flagImg').src=countryData.flags.png;
+
+
+var language=Object.values(countryData.languages); 
+console.log(language);
+document.getElementById('location').innerHTML=countryData.latlng[0]+" °N"+" ,"+countryData.latlng[1]+" °E";
+document.getElementById('lang').innerHTML=language.join(", ");
+//document.getElementById('location').innerHTML=countryData. 
+document.body.style.backgroundImage =
+      "url('https://source.unsplash.com/1920x1080/?" +countryData.name.official+ "')";
+document.getElementById('capital').innerHTML=countryData.capital; 
+document.getElementById('population').innerHTML=countryData.population; 
+console.log(countryData.currencies)
+console.log(Object.values(countryData.currencies)) 
+var currencies=Object.values(countryData.currencies); 
+var filter=currencies.filter(c=>c.name);
+var map=filter.map(c=>`${c.name} (${c.symbol})`); 
+
+document.getElementById('currencies').innerHTML=map.join(", ")
+//.map(c=>`${c.name}(${c.symbol})`).join(", "); 
+//document.getElementById('dcode').innerHTML= 
+document.getElementById('region').innerHTML= countryData.region;
+document.getElementById('lat').innerHTML= countryData.latlng[0]+" °N";
+document.getElementById('long').innerHTML=countryData.latlng[1]+" °E";
+initMap(countryData.latlng[0],countryData.latlng[1],countryData.name.official) 
+
+}  
+/********************************google maps***********************************************************************/ 
+function initMap(lat,lng,name){ 
+		//map features 
+
+			var options={
+				zoom:10, //zooming length
+				center:{lat,lng} //adding directions
+
+		} 
+		//generating new map
+		var map= new google.maps.Map(document.getElementById("map"),options) 
+		//add a new marker 
+		const marker = new google.maps.Marker({
+    position:{lat,lng},
+    map: map,//name of the variable for which the new map was created 
+   icon:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png' //change the icon type
+  }); 
+		//to get info as soon as we click on the symbol 
+		var infoWindow=new google.maps.InfoWindow({content:`"<h4>'${name}'</h4"`}); //displays content in the h1 font size on click
+		marker.addListener("click",function(){
+			infoWindow.open(map,marker);
+		})
+} 
+
+
  
 
 
 
- /*********reading the input in the search bar**********/ 
- //through mouse click 
-document.querySelector(".search button").addEventListener("click", function () {
-  weather.search();//search function should be implememted once i detect a click
-});
-
-document
-  .querySelector(".search-bar")
-  .addEventListener("keyup", function (event) {
-    if (event.key == "Enter") { //call the search function when we sense the enter key being pressed
-     weather.search();
-    }
-  });
-
-weather.fetchWeather("Denver"); //call the function by taking the parameter as  denver
