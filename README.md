@@ -3,6 +3,11 @@
 A dynamic web page which can generate 
 basic details of any country of choice along with
 an embedded Google Map Preview 
+## Built With 
+![Javascript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+ ![Bootstrap](https://img.shields.io/badge/bootstrap-%23563D7C.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
+ ![HTML](	https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white) 
+ ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
 
 ## Features
@@ -18,7 +23,6 @@ an embedded Google Map Preview
 ### Prerequisites
 - Text editor of your choice 
 - [Custom Google API Key](https://developers.google.com/maps/documentation/javascript/get-api-key) 
-### 
 ### Setup
 1. Get your API Key at https://console.cloud.google.com 
 
